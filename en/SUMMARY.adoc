@@ -1,0 +1,36 @@
+= Graylog
+
+. link:pages/architecture.adoc[Architectural considerations]
+. link:pages/getting_started.adoc[Getting Started]
+. link:pages/installation.adoc[Installing Graylog]
+. link:pages/upgrade.adoc[Upgrading Graylog]
+. link:pages/configuration.adoc[Configuring Graylog]
+. link:pages/securing.adoc[Securing Graylog]
+. link:pages/sending_data.adoc[Sending in log data]
+. link:pages/collector_sidecar.adoc[Graylog Collector Sidecar]
+. link:pages/collector.adoc[Graylog Collector (deprecated)]
+. link:pages/queries.adoc[Searching]
+. link:pages/streams.adoc[Streams]
+. link:pages/dashboards.adoc[Dashboards]
+. link:pages/extractors.adoc[Extractors]
+. link:pages/pipelines.adoc[Processing Pipelines]
+. link:pages/drools.adoc[Message rewriting with Drools]
+. link:pages/blacklisting.adoc[Blacklisting]
+. link:pages/geolocation.adoc[Geolocation]
+. link:pages/index_model.adoc[The Graylog index model explained]
+. link:pages/indexer_failures.adoc[Indexer failures and dead letters]
+. link:pages/users_and_roles.adoc[Users and Roles]
+. link:pages/plugins.adoc[Plugins]
+. link:pages/external_dashboards.adoc[External dashboards]
+. link:pages/marketplace.adoc[Graylog Marketplace]
+. link:pages/faq.adoc[Frequently asked questions]
+. link:pages/gelf.adoc[GELF]
+. link:pages/ideas_explained.adoc[The thinking behind the Graylog architecture and why it matters to you]
+. link:pages/changelog.adoc[Changelog]
+
+= Graylog Enterprise
+
+. link:pages/enterprise/intro.adoc
+. link:pages/enterprise/setup.adoc
+. link:pages/archiving.adoc
+. link:pages/enterprise/changelog.adoc

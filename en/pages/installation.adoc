@@ -1,0 +1,36 @@
+[[installing-graylog]]
+Installing Graylog
+------------------
+
+Modern server architectures and configurations are managed in many
+different ways. Some people still put new software somewhere in `opt`
+manually for each server while others have already jumped on the
+configuration management train and fully automated reproducible setups.
+
+Graylog can be installed in many different ways so you can pick whatever
+works best for you. We recommend to start with the
+virtual machine appliances <virtual-machine-appliances> for the fastest
+way to get started and then pick one of the other, more flexible
+installation methods to build an easier to scale setup. (Note: The
+virtual machine appliances <virtual-machine-appliances> are suitable for
+production usage because they are also prepared to scale out to some
+level when required.)
+
+*System requirements*
+
+The Graylog server application has the following prerequisites:
+
+* Some modern Linux distribution (Debian Linux, Ubuntu Linux, or CentOS
+recommended)
+* https://www.elastic.co/downloads/elasticsearch[Elasticsearch 2.1.x or
+later]
+* https://docs.mongodb.org/manual/administration/install-on-linux/[MongoDB
+2.0 or later] (latest stable version is recommended)
+* Oracle Java SE 8 or later (Oracle Java SE 7 is end of life and is no
+longer supported. OpenJDK 8 also works; latest stable update is
+recommended)
+
+This chapter is explaining the many ways to install Graylog and aims to
+help choosing the one that fits your needs.
+
+*Choose an installation method:*

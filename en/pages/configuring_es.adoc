@@ -1,0 +1,11 @@
+orphan::
+
+[[elasticsearch]]
+Elasticsearch
+-------------
+
+__________________________________
+*important*
+
+This page moved to configuring_es.
+__________________________________

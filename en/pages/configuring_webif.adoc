@@ -1,0 +1,11 @@
+orphan::
+
+[[graylog-web-interface]]
+Graylog web interface
+---------------------
+
+_____________________________________
+*important*
+
+This page moved to configuring_webif.
+_____________________________________

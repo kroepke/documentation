@@ -1,0 +1,6 @@
+[[getting-started]]
+Getting Started
+---------------
+
+The fastest way to evaluate Graylog is to download the virtual appliance
+file and run it in VMWare or VirtualBox.

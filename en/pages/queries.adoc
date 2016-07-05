@@ -1,0 +1,433 @@
+[[searching]]
+Searching
+---------
+
+[[search-query-language]]
+Search query language
+~~~~~~~~~~~~~~~~~~~~~
+
+[[syntax]]
+Syntax
+^^^^^^
+
+The search syntax is very close to the Lucene syntax. By default all
+message fields are included in the search if you don't specify a message
+field to search in.
+
+Messages that include the term __ssh__:
+
+....
+ssh
+....
+
+Messages that include the term _ssh_ or __login__:
+
+....
+ssh login
+....
+
+Messages that include the exact phrase __ssh login__:
+
+....
+"ssh login"
+....
+
+Messages where the field _type_ includes __ssh__:
+
+....
+type:ssh
+....
+
+Messages where the field _type_ includes _ssh_ or __login__:
+
+....
+type:(ssh login)
+....
+
+Messages where the field _type_ includes the exact phrase __ssh login__:
+
+....
+type:"ssh login"
+....
+
+Messages that do not have the field __type__:
+
+....
+_missing_:type
+....
+
+Messages that have the field __type__:
+
+....
+_exists_:type
+....
+
+By default all terms or phrases are OR connected so all messages that
+have at least one hit are returned. You can use *Boolean operators and
+groups* for control over this:
+
+....
+"ssh login" AND source:example.org
+("ssh login" AND (source:example.org OR source:another.example.org)) OR _exists_:always_find_me
+....
+
+You can also use the NOT operator:
+
+....
+"ssh login" AND NOT source:example.org
+NOT example.org
+....
+
+*Note that AND, OR, and NOT are case sensitive and must be typed in all
+upper-case.*
+
+*Wildcards:* Use ? to replace a single character or * to replace zero or
+more characters:
+
+....
+source:*.org
+source:exam?le.org
+source:exam?le.*
+....
+
+*Note that leading wildcards are disabled to avoid excessive memory
+consumption!* You can enable them in your `graylog-server.conf`:
+`allow_leading_wildcard_searches = true`
+
+Also note that message, full_message, and source are the only fields
+that can be searched via wildcard by default.
+
+*Fuzziness:* You can search for similar but not equal terms:
+
+....
+ssh logni~
+source:exmaple.org~
+....
+
+This is using the
+http://en.wikipedia.org/wiki/Damerau-Levenshtein_distance[Damerau–Levenshtein
+distance] with a default distance of __2__. You can change the distance
+like this:
+
+....
+source:exmaple.org~1
+....
+
+You can also use the fuzzyness operator to do a *proximity* search where
+the terms in a phrase can have different/fuzzy distances from each other
+and don't have to be in the defined order:
+
+....
+"foo bar"~5
+....
+
+Numeric fields support **range queries**. Ranges in square brackets are
+inclusive, curly brackets are exclusive and can even be combined:
+
+....
+http_response_code:[500 TO 504]
+http_response_code:{400 TO 404}
+bytes:{0 TO 64]
+http_response_code:[0 TO 64}
+....
+
+You can also do searches with one side unbounded:
+
+....
+http_response_code:>400
+http_response_code:<400
+http_response_code:>=400
+http_response_code:<=400
+....
+
+It is also possible to combine unbounded range operators:
+
+....
+http_response_code:(>=400 AND <500)
+....
+
+[[escaping]]
+Escaping
+^^^^^^^^
+
+The following characters must be escaped with a backslash:
+
+....
+&& || : \ / + - ! ( ) { } [ ] ^ " ~ * ?
+....
+
+Example:
+
+....
+resource:\/posts\/45326
+....
+
+[[time-frame-selector]]
+Time frame selector
+~~~~~~~~~~~~~~~~~~~
+
+The time frame selector defines in what time range to search in. It
+offers three different ways of selecting a time range and is vital for
+search speed: If you know you are only interested in messages of the
+last hour, only search in that time frame. This will make Graylog search
+in relevant indices only and greatly reduce system load and required
+resources. You can read more about this here: index_model
+
+image:/images/queries_time_range_selector.png[image]
+
+[[relative-time-frame-selector]]
+Relative time frame selector
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The relative time frame selector lets you look for messages from the
+selected option to the time you hit the search button. The selector
+offers a wide set of relative time frames that fit most of your search
+needs.
+
+[[absolute-time-frame-selector]]
+Absolute time frame selector
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When you know exactly the boundaries of your search, you want to use the
+absolute time frame selector. Simply introduce the dates and times for
+the search manually or click in the input field to open up a calendar
+where you can choose the day with your mouse.
+
+[[keyword-time-frame-selector]]
+Keyword time frame selector
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Graylog offers a keyword time frame selector that allows you to specify
+the time frame for the search in natural language like _last hour_ or
+__last 90 days__. The web interface shows a preview of the two actual
+timestamps that will be used for the search.
+
+image:/images/queries_keyword_time_selector.png[image]
+
+Here are a few examples for possible values.
+
+* "last month" searches between one month ago and now
+* "4 hours ago" searches between four hours ago and now
+* "1st of april to 2 days ago" searches between 1st of April and 2 days
+ago
+* "yesterday midnight +0200 to today midnight +0200" searches between
+yesterday midnight and today midnight in timezone +0200 - will be 22:00
+in UTC
+
+The time frame is parsed using the http://natty.joestelmach.com/[natty
+natural language parser]. Please consult its documentation for details.
+
+[[saved-searches]]
+Saved searches
+~~~~~~~~~~~~~~
+
+Sometimes you may want to search a specific search configuration to be
+used later. Graylog provides a saved search functionality to accomplish
+exactly that.
+
+Once you submitted your search, selected the fields you want to show
+from the search sidebar, and chosen a resolution for the histogram,
+click on the _Save search criteria_ button on the sidebar.
+
+image:/images/saved_search_create.png[image]
+
+Give a name to the current search and click on save. When you want to
+use the saved search later on, you only need to select it from the saved
+search selector.
+
+image:/images/saved_search_selector.png[image]
+
+Of course, you can always update the selected fields or name of your
+saved search. To do so, select the saved search from the saved search
+selector, update the field selection or histogram resolution, and click
+on _Saved search_ -> __Update search criteria__. It is also possible to
+delete the saved search by selecting _Saved search_ -> __Delete saved
+search__.
+
+image:/images/saved_search_update.png[image]
+
+[[analysis]]
+Analysis
+~~~~~~~~
+
+Graylog provides several tools to analyze your search results. It is
+possible to save these analysis into dashboards, so you can check them
+over time in a more convenient way. To analyze a field from your search
+results, expand the field in the search sidebar and click on the button
+of the analysis you want to perform.
+
+image:/images/search_analysis.png[image]
+
+[[field-statistics]]
+Field statistics
+^^^^^^^^^^^^^^^^
+
+Compute different statistics on your fields, to help you better
+summarize and understand the data in them.
+
+The statistical information consist of: total, mean, minimum, maximum,
+standard deviation, variance, sum, and cardinality. On non-numeric
+fields, you can only see the total amount of messages containing that
+field, and the cardinality of the field, i.e. the number of unique
+values it has.
+
+image:/images/field_statistics.png[image]
+
+[[quick-values]]
+Quick values
+^^^^^^^^^^^^
+
+Quick values helps you to find out the distribution of values for a
+field. Alongside a graphic representation of the common values contained
+in a field, Graylog will display a table with all different values,
+allowing you to see the number of times they appear. You can include any
+value in your search query by clicking on the magnifying glass icon
+located in the value row.
+
+image:/images/quick_values.png[image]
+
+[[field-graphs]]
+Field graphs
+^^^^^^^^^^^^
+
+You can create field graphs for any numeric field, by clicking on the
+_Generate chart_ button in the search sidebar. Using the options in the
+_Customize_ menu on top of the field graph, you can change the
+statistical function used in the graph, the kind of graph to use to
+represent the values, the graph interpolation, as well as the time
+resolution.
+
+image:/images/field_graph.png[image]
+
+Once you have customized some field graphs, you can also combine them by
+dragging them from the hamburger icon on the top corner of the graph,
+and dropping them into another field graph. You can see the location of
+the hamburger icon and the end result in the the following screenshots:
+
+image:/images/stacked_graph_1.png[image]
+
+image:/images/stacked_graph_2.png[image]
+
+Field graphs appear every time you perform a search, allowing you to
+compare data, or combine graphs coming from different streams.
+
+[[export-results-as-csv]]
+Export results as CSV
+~~~~~~~~~~~~~~~~~~~~~
+
+It is also possible to export the results of your search as a CSV
+document. To do so, select all fields you want to export in the search
+sidebar, click on the _More actions_ button, and select __Export as
+CSV__.
+
+image:/images/export_as_csv.png[image]
+
+**Hint**: Some Graylog inputs keep the original message in the the
+full_message field. If you need to export the original message, you can
+do so by clicking on the _List all fields_ link at the bottom of the
+sidebar, and then selecting the full_message field.
+
+[[search-result-highlighting]]
+Search result highlighting
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Graylog supports search result highlighting since v0.20.2:
+
+image:/images/search_result_highlighting.png[image]
+
+[[enablingdisabling-search-result-highlighting]]
+Enabling/Disabling search result highlighting
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using search result highlighting will result in slightly higher resource
+consumption of searches. You can enable and disable it using a
+configuration parameter in the `graylog.conf` of your `graylog-server`
+nodes:
+
+....
+allow_highlighting = true
+....
+
+[[search-configuration]]
+Search configuration
+~~~~~~~~~~~~~~~~~~~~
+
+Graylog allows customizing the options allowed to search queries, like
+limiting the time range users can select or configuring the list of
+displayed relative time ranges.
+
+image:/images/queries_search_configuration.png[image]
+
+All search configuration settings can be customized using the web
+interface on the _System_ -> _Configurations_ page in the _Search
+configuration_ section.
+
+[[query-time-range-limit]]
+Query time range limit
+^^^^^^^^^^^^^^^^^^^^^^
+
+Sometimes the amount of data stored in Graylog is quite big and spans a
+wide time range (e. g. multiple years). In order to prevent normal users
+from accidentally running search queries which could use up lots of
+resources, it is possible to limit the time range that users are allowed
+to search in.
+
+Using this feature, the time range of a search query exceeding the
+configured query time range limit will automatically be adapted to the
+given limit.
+
+image:/images/queries_query_time_range_limit.png[image]
+
+The query time range limit is a _duration_ formatted according to ISO
+8601 following the basic format `P<date>T<time>` with the following
+rules:
+
+[cols=",",options="header",]
+|=======================================================================
+|Designator |Description
+|`P` |Duration designator (for period) placed at the start of the
+duration representation
+
+|`Y` |Year designator that follows the value for the number of years
+
+|`M` |Month designator that follows the value for the number of months
+
+|`W` |Week designator that follows the value for the number of weeks
+
+|`D` |Day designator that follows the value for the number of days
+
+|`T` |Time designator that precedes the time components of the
+representation
+
+|`H` |Hour designator that follows the value for the number of hours
+
+|`M` |Minute designator that follows the value for the number of minutes
+
+|`S` |Second designator that follows the value for the number of seconds
+|=======================================================================
+
+Examples:
+
+[cols=",",options="header",]
+|==============================
+|ISO 8601 duration |Description
+|`P30D` |30 days
+|`PT1H` |1 hour
+|`P1DT12H` |1 day and 12 hours
+|==============================
+
+More details about the format of ISO 8601 durations can be found
+https://en.wikipedia.org/wiki/ISO_8601#Durations[on Wikipedia].
+
+[[relative-time-ranges]]
+Relative time ranges
+^^^^^^^^^^^^^^^^^^^^
+
+The list of time ranges displayed in the relative-time-frame-selector
+can be configured, too. It consists of a list of ISO 8601 durations
+which the users can select on the search page.
+
+The format of the ISO 8601 durations can be looked up
+here <iso_8601_duration>.
+
+image:/images/queries_relative_timerange_options.png[image]

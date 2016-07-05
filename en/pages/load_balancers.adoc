@@ -1,0 +1,11 @@
+orphan::
+
+[[load-balancer-integration]]
+Load balancer integration
+-------------------------
+
+____________________________________________
+*important*
+
+This page moved to loadbalancer_integration.
+____________________________________________
